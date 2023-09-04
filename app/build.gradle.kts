@@ -1,16 +1,19 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "pl.jacekrys.routingapp"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "pl.jacekrys.routingapp"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -30,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -51,9 +54,9 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation("androidx.activity:activity-compose:1.7.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -66,4 +69,42 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.1-alpha")
+
+
+    // NAVIGATION
+    implementation("androidx.navigation:navigation-compose:2.7.1")
+
+    // DATABASE
+    val room_version = "2.5.2"
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+
+    // NETWORKING
+    val moshi = "1.14.0"
+    val retrofit = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofit")
+    implementation("com.squareup.moshi:moshi:$moshi")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshi")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshi")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofit")
+
+    // DEPENDENCY INJECTION
+    val koinAndroidVersion = "3.4.3"
+    val koinAndroidComposeVersion = "3.4.6"
+    implementation("io.insert-koin:koin-android:$koinAndroidVersion")
+    implementation("io.insert-koin:koin-androidx-compose:$koinAndroidComposeVersion")
+    implementation("io.insert-koin:koin-androidx-compose-navigation:$koinAndroidComposeVersion")
+
+    // MAPS
+    implementation("com.google.maps.android:maps-compose:2.14.0")
+
+    // LOGGING
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // TEST
+    testImplementation("org.amshove.kluent:kluent:1.72")
+    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
 }

@@ -1,4 +1,4 @@
-package pl.jacekrys.routingapp.ui.theme
+package pl.jacekrys.routingapp.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
