@@ -1,4 +1,5 @@
 package pl.jacekrys.routingapp.feature.route.data.remote.model
 
-interface DataModelRemote {
-}
+data class InstructionRemote(
+    val text: String
+)
