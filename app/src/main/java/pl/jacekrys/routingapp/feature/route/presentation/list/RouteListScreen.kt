@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,14 +32,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pl.jacekrys.routingapp.R
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
 import pl.jacekrys.routingapp.feature.route.presentation.list.component.RouteItem
 
 @Composable
 fun RouteListScreen(
-    items: List<Route>
+    viewModel: RouteListViewModel
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    RouteListScreenContent(state = state)
+}
+
+@Composable
+fun RouteListScreenContent(state: RouteListState) {
     Column {
         Column(
             verticalArrangement = Arrangement.Bottom,
@@ -86,9 +95,9 @@ fun RouteListScreen(
             item {
                 Spacer(Modifier.height(20.dp))
             }
-            itemsIndexed(items) { index, item ->
+            itemsIndexed(state.routes) { index, item ->
                 RouteItem(modifier = Modifier.fillMaxWidth())
-                if (index < items.lastIndex)
+                if (index < state.routes.lastIndex)
                     Spacer(Modifier.height(16.dp))
             }
         }
@@ -155,10 +164,12 @@ fun CustomTextField(
 @Preview(showSystemUi = true)
 @Composable
 fun RouteListScreenPreview() {
-    RouteListScreen(
-        items = listOf(
-            Route("", "", listOf()),
-            Route("", "", listOf())
+    RouteListScreenContent(
+        state = RouteListState(
+            routes = listOf(
+                Route("", "", listOf()),
+                Route("", "", listOf())
+            )
         )
     )
 }
