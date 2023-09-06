@@ -7,4 +7,6 @@
     <string name="unknown_error">Even we don\'t know what happened :O</string>
     <string name="stops_label">Stops</string>
     <string name="greeting">Hi, user!</string>
+    <string name="greeting_subtext">Where do you want to go today?</string>
+    <string name="retry">Retry</string>
 </resources>

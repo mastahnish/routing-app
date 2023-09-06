@@ -109,7 +109,7 @@ fun RouteListScreenContent(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                "Where we go today?",
+                stringResource(id = R.string.greeting_subtext),
                 style = TextStyle(
                     color = Color.White,
                     fontSize = 16.sp,
@@ -184,7 +184,7 @@ fun Logo(modifier: Modifier) {
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
-            "Routing App", style = TextStyle(
+            stringResource(id = R.string.app_name), style = TextStyle(
                 fontSize = 23.sp,
                 fontWeight = FontWeight(700),
                 color = Color(0xFFFFFFFF),
@@ -266,7 +266,7 @@ fun ErrorView(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "Retry", style = TextStyle(
+                stringResource(id = R.string.retry), style = TextStyle(
                     fontSize = 24.sp,
                     lineHeight = 23.5.sp,
                     fontWeight = FontWeight(600),
