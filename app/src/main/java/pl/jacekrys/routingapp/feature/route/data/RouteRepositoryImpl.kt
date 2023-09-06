@@ -18,6 +18,13 @@ class RouteRepositoryImpl(
     }
 
     override suspend fun getRoute(id: String): Route {
+        return callOrThrow(routesErrorWrapper) {
+            routeApi.getRoute(id)
+                .toDomain()
+        }
+    }
+
+    override suspend fun getRouteDetails(route: Route): Route {
         TODO("Not yet implemented")
     }
 }

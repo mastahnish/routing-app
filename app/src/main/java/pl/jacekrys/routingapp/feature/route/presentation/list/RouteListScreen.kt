@@ -68,7 +68,8 @@ fun RouteListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     RouteListScreenContent(state = state,
         onSearchTextChange = { viewModel.updateSearchText(it) },
-        onRetryClick = { viewModel.getRoutes() }
+        onRetryClick = { viewModel.getRoutes() },
+        onRouteClicked = { viewModel.chooseRoute(it)}
     )
 }
 
@@ -77,6 +78,7 @@ fun RouteListScreenContent(
     state: RouteListState,
     onRetryClick: () -> Unit,
     onSearchTextChange: (String) -> Unit,
+    onRouteClicked: (Route) -> Unit
 ) {
     Column {
         Column(
@@ -145,7 +147,7 @@ fun RouteListScreenContent(
                     RouteItem(
                         modifier = Modifier.fillMaxWidth(),
                         route = item,
-                        onRouteClick = {/* TODO */ }
+                        onRouteClick = onRouteClicked
                     )
                     if (index < state.routes.lastIndex)
                         Spacer(Modifier.height(16.dp))
@@ -308,7 +310,8 @@ fun RouteListScreenPreview() {
             ),
         ),
         onSearchTextChange = {},
-        onRetryClick = {}
+        onRetryClick = {},
+        onRouteClicked = {}
     )
 }
 

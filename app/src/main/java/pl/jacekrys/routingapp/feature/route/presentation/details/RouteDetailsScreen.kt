@@ -14,52 +14,99 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RouteDetailsScreen(
     viewModel: RouteDetailsViewModel
 ) {
-    RouteDetailsScreenContent()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+    }
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    viewModel.getRouteDetails()
+                }
+
+                else -> Unit
+            }
+        }
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(key1 = state) {
+        state.route?.getCameraBounds()?.let {
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngBounds(
+                    it,
+                    100
+                ),
+                durationMs = 1000
+            )
+        }
+    }
+
+    RouteDetailsScreenContent(
+        state = state,
+        scaffoldState = scaffoldState,
+        cameraPositionState = cameraPositionState
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RouteDetailsScreenContent() {
-    val singapore = LatLng(1.35, 103.87)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-    }
+fun RouteDetailsScreenContent(
+    state: RouteDetailsState,
+    scaffoldState: BottomSheetScaffoldState,
+    cameraPositionState: CameraPositionState
+) {
 
-
-    val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
         sheetContent = {
-            RouteDetailsBottomSheetContent()
+            RouteDetailsBottomSheetContent(state)
         },
         scaffoldState = scaffoldState,
         sheetPeekHeight = 96.dp,
@@ -99,11 +146,17 @@ fun RouteDetailsScreenContent() {
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState
             ) {
-                Marker(
-                    state = MarkerState(position = singapore),
-                    title = "Singapore",
-                    snippet = "Marker in Singapore"
-                )
+                state.route?.stops?.forEachIndexed { idx, stop ->
+                    Marker(
+                        state = MarkerState(
+                            position = LatLng(
+                                stop.coordinates.latitude.toDouble(),
+                                stop.coordinates.longitude.toDouble()
+                            )
+                        ),
+                        title = "Stop ${idx + 1}",
+                    )
+                }
             }
             MapAppBar(
                 modifier = Modifier
@@ -150,7 +203,7 @@ fun MapAppBar(
 }
 
 @Composable
-fun RouteDetailsBottomSheetContent() {
+fun RouteDetailsBottomSheetContent(state: RouteDetailsState) {
 
 }
 
@@ -160,8 +213,15 @@ fun MapAppBarPreview() {
     MapAppBar(Modifier, "Route name", {})
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showSystemUi = true)
 @Composable
 fun RouteDetailsScreenPreview() {
-    RouteDetailsScreenContent()
+    RouteDetailsScreenContent(
+        state = RouteDetailsState(),
+        scaffoldState = rememberBottomSheetScaffoldState(),
+        cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+        }
+    )
 }

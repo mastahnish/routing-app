@@ -13,6 +13,7 @@ import pl.jacekrys.routingapp.BuildConfig
 import pl.jacekrys.routingapp.feature.route.data.RouteRepositoryImpl
 import pl.jacekrys.routingapp.feature.route.data.remote.RouteApi
 import pl.jacekrys.routingapp.feature.route.domain.repository.RouteRepository
+import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRouteUseCase
 import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRoutesListUseCase
 import pl.jacekrys.routingapp.feature.route.exception.RoutesErrorWrapper
 import pl.jacekrys.routingapp.feature.route.presentation.RoutesErrorMapper
@@ -25,7 +26,7 @@ val routeModule = module {
     // data
     single {
         OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
     }
 
@@ -54,6 +55,7 @@ val routeModule = module {
 
     // domain
     factoryOf(::GetRoutesListUseCase)
+    factoryOf(::GetRouteUseCase)
 
     // presentation
     factoryOf(::RoutesErrorMapper)

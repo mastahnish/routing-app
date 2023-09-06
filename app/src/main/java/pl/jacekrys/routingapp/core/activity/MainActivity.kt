@@ -18,6 +18,7 @@ import org.koin.compose.koinInject
 import pl.jacekrys.routingapp.core.navigation.NavigationEvent
 import pl.jacekrys.routingapp.core.navigation.Navigator
 import pl.jacekrys.routingapp.core.navigation.Screen
+import pl.jacekrys.routingapp.core.navigation.addArgument
 import pl.jacekrys.routingapp.core.ui.theme.RoutingAppTheme
 import pl.jacekrys.routingapp.feature.route.presentation.details.RouteDetailsScreen
 import pl.jacekrys.routingapp.feature.route.presentation.details.RouteDetailsViewModel
@@ -43,10 +44,14 @@ class MainActivity : ComponentActivity() {
                                             navController.navigateUp()
                                     }
 
-                                    is NavigationEvent.Destination ->
+                                    is NavigationEvent.Destination -> {
+                                        val route = navigationEvent.argument?.let {
+                                            navigationEvent.screen.route.addArgument(it)
+                                        } ?: navigationEvent.screen.route
                                         navController.navigate(
-                                            route = navigationEvent.screen.route,
+                                            route = route
                                         )
+                                    }
                                 }
                             }
                         }

@@ -3,7 +3,7 @@ package pl.jacekrys.routingapp.core.navigation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
-class Navigator() {
+class Navigator {
 
     companion object {
         val START_DESTINATION = Screen.RoutesList
@@ -13,8 +13,8 @@ class Navigator() {
         Channel<NavigationEvent>(Channel.RENDEZVOUS)
     val navigationEvents = _navigationEvents.receiveAsFlow()
 
-    fun navigateTo(screen: Screen) {
-        _navigationEvents.trySend(NavigationEvent.Destination(screen))
+    fun navigateTo(screen: Screen, argument: String? = null) {
+        _navigationEvents.trySend(NavigationEvent.Destination(screen, argument))
     }
 
     fun navigateBack() {
@@ -24,7 +24,8 @@ class Navigator() {
 
 sealed interface NavigationEvent {
     data class Destination(
-        val screen: Screen
+        val screen: Screen,
+        val argument: String?
     ) : NavigationEvent
 
     object Back : NavigationEvent
@@ -32,5 +33,5 @@ sealed interface NavigationEvent {
 
 sealed class Screen(val route: String) {
     object RoutesList : Screen("routes_list")
-    object RouteDetails : Screen("route_details")
+    object RouteDetails : Screen("route_details/{id}")
 }
