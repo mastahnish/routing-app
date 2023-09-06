@@ -177,7 +177,7 @@ fun RouteDetailsScreenContent(
                     state.routeDetails?.let {
                         Polyline(
                             points = it.getCoordinatesAsLatLng(),
-                            color = Color.Magenta
+                            color = Color.Black
                         )
                     }
                 }
