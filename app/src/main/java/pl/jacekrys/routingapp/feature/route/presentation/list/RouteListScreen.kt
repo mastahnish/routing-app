@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,12 +66,16 @@ fun RouteListScreen(
         }
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
-    RouteListScreenContent(state = state, onSearchTextChange = { viewModel.updateSearchText(it) })
+    RouteListScreenContent(state = state,
+        onSearchTextChange = { viewModel.updateSearchText(it) },
+        onRetryClick = { viewModel.getRoutes() }
+    )
 }
 
 @Composable
 fun RouteListScreenContent(
     state: RouteListState,
+    onRetryClick: () -> Unit,
     onSearchTextChange: (String) -> Unit,
 ) {
     Column {
@@ -117,7 +119,13 @@ fun RouteListScreenContent(
                     .padding(top = 4.dp, bottom = 24.dp)
             )
         }
-        if (state.routes.isEmpty())
+        if (state.errorInfo != null)
+            ErrorView(
+                modifier = Modifier.weight(1f),
+                errorMessage = state.errorInfo,
+                onRetryClick = onRetryClick
+            )
+        else if (state.routes.isEmpty())
             Text(
                 text = stringResource(id = R.string.no_results_info), modifier = Modifier
                     .fillMaxWidth()
@@ -219,14 +227,23 @@ fun CustomTextField(
 }
 
 @Composable
-fun NoConnectionView(modifier: Modifier) {
+fun ErrorView(
+    modifier: Modifier,
+    errorMessage: String,
+    onRetryClick: () -> Unit = {}
+) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        NoConnectionInfo(modifier = Modifier.weight(1f))
+        ErrorInfo(
+            modifier = Modifier
+                .weight(1f),
+            errorMessage = errorMessage
+        )
         Button(
-            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+            onClick = { onRetryClick() }, colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFD3F268),
                 contentColor = Color.Black
             ),
@@ -247,7 +264,7 @@ fun NoConnectionView(modifier: Modifier) {
 
 
 @Composable
-fun NoConnectionInfo(modifier: Modifier) {
+fun ErrorInfo(modifier: Modifier, errorMessage: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -269,7 +286,7 @@ fun NoConnectionInfo(modifier: Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "No internet connection", style = TextStyle(
+            text = errorMessage, style = TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 23.5.sp,
                 fontWeight = FontWeight(600),
@@ -290,12 +307,13 @@ fun RouteListScreenPreview() {
                 Route("", "Example 2", listOf())
             ),
         ),
-        onSearchTextChange = {}
+        onSearchTextChange = {},
+        onRetryClick = {}
     )
 }
 
 @Preview
 @Composable
 fun NoConnectionPreview() {
-    NoConnectionView(modifier = Modifier)
+    ErrorView(modifier = Modifier, errorMessage = "No connection")
 }

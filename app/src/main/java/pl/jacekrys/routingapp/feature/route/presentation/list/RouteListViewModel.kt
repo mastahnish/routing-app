@@ -5,11 +5,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import pl.jacekrys.routingapp.core.base.Resource
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
-import pl.jacekrys.routingapp.feature.route.domain.repository.RouteRepository
+import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRoutesListUseCase
+import pl.jacekrys.routingapp.feature.route.presentation.RoutesErrorMapper
+import timber.log.Timber
 
 class RouteListViewModel(
-    private val routeRepository: RouteRepository
+    private val getRoutesListUseCase: GetRoutesListUseCase,
+    private val routesErrorMapper: RoutesErrorMapper
 ) : ViewModel() {
     private val _state by lazy { MutableStateFlow(RouteListState()) }
     val state = _state.asStateFlow()
@@ -17,9 +21,22 @@ class RouteListViewModel(
     private var routes: List<Route> = listOf()
     fun getRoutes() {
         viewModelScope.launch {
-            val routesResult = routeRepository.getRoutes()
-            routes = routesResult
-            filterResults()
+            when (val result = getRoutesListUseCase()) {
+                is Resource.Success -> {
+                    routes = result.data
+                    _state.value = _state.value.copy(
+                        errorInfo = null
+                    )
+                    filterResults()
+                }
+
+                is Resource.Error -> {
+                    Timber.e(result.error, "Error while getting routes")
+                    _state.value = _state.value.copy(
+                        errorInfo = routesErrorMapper.map(result.error)
+                    )
+                }
+            }
         }
     }
 

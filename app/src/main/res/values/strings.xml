@@ -2,4 +2,7 @@
     <string name="app_name">RoutingApp</string>
     <string name="route_search_placeholder">Route name</string>
     <string name="no_results_info">No results found</string>
+    <string name="routes_not_found">Routes not found</string>
+    <string name="server_error">Server error</string>
+    <string name="unknown_error">Even we don\'t know what happened :O</string>
 </resources>
