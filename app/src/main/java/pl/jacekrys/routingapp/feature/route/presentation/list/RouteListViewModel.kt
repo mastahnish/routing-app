@@ -24,6 +24,7 @@ class RouteListViewModel(
     private var routes: List<Route> = listOf()
     fun getRoutes() {
         viewModelScope.launch {
+            _state.value = state.value.copy(isListLoading = true)
             when (val result = getRoutesListUseCase()) {
                 is Resource.Success -> {
                     routes = result.data
@@ -40,6 +41,7 @@ class RouteListViewModel(
                     )
                 }
             }
+            _state.value = state.value.copy(isListLoading = false)
         }
     }
 

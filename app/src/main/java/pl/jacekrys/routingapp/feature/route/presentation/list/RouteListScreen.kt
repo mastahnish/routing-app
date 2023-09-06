@@ -1,5 +1,6 @@
 package pl.jacekrys.routingapp.feature.route.presentation.list
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +44,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pl.jacekrys.routingapp.R
+import pl.jacekrys.routingapp.core.ui.theme.NeonGreen
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
 import pl.jacekrys.routingapp.feature.route.presentation.list.component.RouteItem
 
@@ -69,7 +72,7 @@ fun RouteListScreen(
     RouteListScreenContent(state = state,
         onSearchTextChange = { viewModel.updateSearchText(it) },
         onRetryClick = { viewModel.getRoutes() },
-        onRouteClicked = { viewModel.chooseRoute(it)}
+        onRouteClicked = { viewModel.chooseRoute(it) }
     )
 }
 
@@ -121,21 +124,32 @@ fun RouteListScreenContent(
                     .padding(top = 4.dp, bottom = 24.dp)
             )
         }
-        if (state.errorInfo != null)
-            ErrorView(
+
+        when {
+            state.isListLoading -> Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f), contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = NeonGreen
+                )
+            }
+
+            state.errorInfo != null -> ErrorView(
                 modifier = Modifier.weight(1f),
                 errorMessage = state.errorInfo,
                 onRetryClick = onRetryClick
             )
-        else if (state.routes.isEmpty())
-            Text(
+
+            state.routes.isEmpty() -> Text(
                 text = stringResource(id = R.string.no_results_info), modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 textAlign = TextAlign.Center
             )
-        else
-            LazyColumn(
+
+            else -> LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp)
@@ -153,7 +167,7 @@ fun RouteListScreenContent(
                         Spacer(Modifier.height(16.dp))
                 }
             }
-
+        }
     }
 }
 
