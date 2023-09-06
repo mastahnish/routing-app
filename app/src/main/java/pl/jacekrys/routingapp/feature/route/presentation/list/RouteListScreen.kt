@@ -97,7 +97,7 @@ fun RouteListScreenContent(
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                "Good morning!",
+                stringResource(id = R.string.greeting),
                 style = TextStyle(
                     color = Color.White,
                     fontSize = 32.sp,

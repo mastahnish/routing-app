@@ -6,4 +6,5 @@
     <string name="server_error">Server error</string>
     <string name="unknown_error">Even we don\'t know what happened :O</string>
     <string name="stops_label">Stops</string>
+    <string name="greeting">Hi, user!</string>
 </resources>

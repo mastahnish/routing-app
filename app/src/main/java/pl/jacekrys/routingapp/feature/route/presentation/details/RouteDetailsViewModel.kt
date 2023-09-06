@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pl.jacekrys.routingapp.core.base.Resource
+import pl.jacekrys.routingapp.core.navigation.Navigator
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
 import pl.jacekrys.routingapp.feature.route.domain.model.RouteDetails
 import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRouteDetailsUseCase
@@ -19,6 +20,7 @@ class RouteDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val getRouteUseCase: GetRouteUseCase,
     private val getRouteDetailsUseCase: GetRouteDetailsUseCase,
+    private val navigator: Navigator
 ) : ViewModel() {
     private val _state by lazy { MutableStateFlow(RouteDetailsState()) }
     val state = _state.asStateFlow()
@@ -52,5 +54,9 @@ class RouteDetailsViewModel(
                 }
             }
         }
+    }
+
+    fun backToList() {
+        navigator.navigateBack()
     }
 }

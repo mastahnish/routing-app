@@ -104,7 +104,8 @@ fun RouteDetailsScreen(
     RouteDetailsScreenContent(
         state = state,
         scaffoldState = scaffoldState,
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        onBackClicked = { viewModel.backToList() }
     )
 }
 
@@ -113,7 +114,8 @@ fun RouteDetailsScreen(
 fun RouteDetailsScreenContent(
     state: RouteDetailsState,
     scaffoldState: BottomSheetScaffoldState,
-    cameraPositionState: CameraPositionState
+    cameraPositionState: CameraPositionState,
+    onBackClicked: () -> Unit
 ) {
     BottomSheetScaffold(
         sheetContent = {
@@ -186,7 +188,7 @@ fun RouteDetailsScreenContent(
                     .align(Alignment.TopCenter)
                     .padding(16.dp),
                 title = "Route name",
-                onBackClicked = {}
+                onBackClicked = onBackClicked
             )
         }
     }
@@ -364,7 +366,8 @@ fun RouteDetailsScreenPreview() {
         scaffoldState = rememberBottomSheetScaffoldState(),
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(LatLng(51.10788, 17.03853), 10f)
-        }
+        },
+        onBackClicked = {}
     )
 }
 
