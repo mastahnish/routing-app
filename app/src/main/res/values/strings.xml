@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RoutingApp</string>
+    <string name="route_search_placeholder">Route name</string>
+    <string name="no_results_info">No results found</string>
 </resources>

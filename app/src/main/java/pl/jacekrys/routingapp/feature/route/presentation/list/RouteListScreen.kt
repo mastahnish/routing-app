@@ -3,6 +3,7 @@ package pl.jacekrys.routingapp.feature.route.presentation.list
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -65,11 +68,14 @@ fun RouteListScreen(
         }
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
-    RouteListScreenContent(state = state)
+    RouteListScreenContent(state = state, onSearchTextChange = { viewModel.updateSearchText(it) })
 }
 
 @Composable
-fun RouteListScreenContent(state: RouteListState) {
+fun RouteListScreenContent(
+    state: RouteListState,
+    onSearchTextChange: (String) -> Unit,
+) {
     Column {
         Column(
             verticalArrangement = Arrangement.Bottom,
@@ -104,26 +110,40 @@ fun RouteListScreenContent(state: RouteListState) {
                 ),
             )
             CustomTextField(
-                value = "Birmingham",
-                onValueChange = {},
+                value = state.searchText,
+                onValueChange = onSearchTextChange,
+                placeholder = stringResource(id = R.string.route_search_placeholder),
                 modifier = Modifier
                     .padding(top = 4.dp, bottom = 24.dp)
             )
         }
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-        ) {
-            item {
-                Spacer(Modifier.height(20.dp))
+        if (state.routes.isEmpty())
+            Text(
+                text = stringResource(id = R.string.no_results_info), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        else
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp)
+            ) {
+                item {
+                    Spacer(Modifier.height(20.dp))
+                }
+                itemsIndexed(state.routes) { index, item ->
+                    RouteItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        route = item,
+                        onRouteClick = {/* TODO */ }
+                    )
+                    if (index < state.routes.lastIndex)
+                        Spacer(Modifier.height(16.dp))
+                }
             }
-            itemsIndexed(state.routes) { index, item ->
-                RouteItem(modifier = Modifier.fillMaxWidth())
-                if (index < state.routes.lastIndex)
-                    Spacer(Modifier.height(16.dp))
-            }
-        }
+
     }
 }
 
@@ -159,6 +179,7 @@ fun LogoPreview() {
 fun CustomTextField(
     modifier: Modifier,
     value: String,
+    placeholder: String,
     onValueChange: (String) -> Unit
 ) {
     Row(
@@ -169,17 +190,31 @@ fun CustomTextField(
             .clip(RoundedCornerShape(100))
             .background(Color.White)
     ) {
+        val textStyle = TextStyle(
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.Black
+        )
         Icon(
             imageVector = Icons.Default.Search, contentDescription = null,
             modifier = Modifier.padding(start = 16.dp, end = 8.dp)
         )
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .padding(8.dp)
-        )
+                .padding(8.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = textStyle
+            )
+            if (value.isEmpty())
+                Text(text = placeholder, style = textStyle.copy(Color.Gray))
+        }
+
     }
 }
 
@@ -251,10 +286,11 @@ fun RouteListScreenPreview() {
     RouteListScreenContent(
         state = RouteListState(
             routes = listOf(
-                Route("", "", listOf()),
-                Route("", "", listOf())
-            )
-        )
+                Route("", "Example 1", listOf()),
+                Route("", "Example 2", listOf())
+            ),
+        ),
+        onSearchTextChange = {}
     )
 }
 

@@ -26,10 +26,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pl.jacekrys.routingapp.feature.route.domain.model.Route
 import androidx.compose.ui.unit.sp as sp1
 
 @Composable
-fun RouteItem(modifier: Modifier) {
+fun RouteItem(
+    modifier: Modifier,
+    route: Route,
+    onRouteClick: (Route) -> Unit
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -44,7 +49,7 @@ fun RouteItem(modifier: Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                "Batchelder bus 54", style = TextStyle(
+                route.name, style = TextStyle(
                     fontSize = 20.sp,
                     lineHeight = 16.sp,
                     fontWeight = FontWeight(600),
@@ -52,7 +57,7 @@ fun RouteItem(modifier: Modifier) {
                 )
             )
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onRouteClick(route) },
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
@@ -72,5 +77,5 @@ fun RouteItem(modifier: Modifier) {
 @Preview
 @Composable
 fun RouteItemPreview() {
-    RouteItem(Modifier)
+    RouteItem(Modifier, Route("id", "Barchelder bus 54", null), {})
 }
