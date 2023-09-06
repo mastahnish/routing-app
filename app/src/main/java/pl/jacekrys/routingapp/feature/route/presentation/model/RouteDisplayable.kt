@@ -8,12 +8,12 @@ import pl.jacekrys.routingapp.feature.route.domain.model.Stop
 data class RouteDisplayable(
     val id: String,
     val name: String,
-    val stops: List<Stop>?
+    val stops: List<Stop>
 ) {
     constructor(route: Route) : this(
         id = route.id,
         name = route.name,
-        stops = route.stops
+        stops = route.stops ?: emptyList()
     )
 
     fun toDomain() = Route(

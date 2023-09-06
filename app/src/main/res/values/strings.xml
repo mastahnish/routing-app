@@ -5,4 +5,5 @@
     <string name="routes_not_found">Routes not found</string>
     <string name="server_error">Server error</string>
     <string name="unknown_error">Even we don\'t know what happened :O</string>
+    <string name="stops_label">Stops</string>
 </resources>

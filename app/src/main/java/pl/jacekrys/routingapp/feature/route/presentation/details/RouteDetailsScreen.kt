@@ -1,15 +1,21 @@
 package pl.jacekrys.routingapp.feature.route.presentation.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -29,9 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,13 +52,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import pl.jacekrys.routingapp.R
+import pl.jacekrys.routingapp.core.ui.theme.NeonGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,11 +115,14 @@ fun RouteDetailsScreenContent(
     scaffoldState: BottomSheetScaffoldState,
     cameraPositionState: CameraPositionState
 ) {
-
-
     BottomSheetScaffold(
         sheetContent = {
-            RouteDetailsBottomSheetContent(state)
+            RouteDetailsBottomSheetContent(
+                state,
+                modifier = Modifier
+                    .nestedScroll(rememberNestedScrollInteropConnection())
+                    .padding(horizontal = 16.dp)
+            )
         },
         scaffoldState = scaffoldState,
         sheetPeekHeight = 96.dp,
@@ -210,8 +225,128 @@ fun MapAppBar(
 }
 
 @Composable
-fun RouteDetailsBottomSheetContent(state: RouteDetailsState) {
+fun RouteDetailsBottomSheetContent(state: RouteDetailsState, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+    ) {
+        state.routeDetails?.let {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                RouteDetailsInfoItem(
+                    icon = {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .height(32.dp)
+                                .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                .background(NeonGreen),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = state.route?.stops?.size.toString())
+                        }
+                    },
+                    text = stringResource(id = R.string.stops_label)
+                )
+                RouteDetailsInfoItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_duration),
+                            contentDescription = null,
+                            tint = NeonGreen
+                        )
+                    },
+                    text = it.getFormattedDuration()
+                )
+                RouteDetailsInfoItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_distance),
+                            contentDescription = null,
+                            tint = NeonGreen
+                        )
+                    },
+                    text = it.getFormattedDistance()
+                )
+            }
+        }
+        LazyColumn {
+            val stops = state.route?.stops ?: emptyList()
+            itemsIndexed(stops) { idx, stop ->
+                RouteMapItem(
+                    title = "Stop ${idx + 1}",
+                    removeBottomLine = idx == stops.size - 1,
+                    removeTopLine = idx == 0,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 
+}
+
+@Composable
+fun RouteDetailsInfoItem(
+    icon: @Composable () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+    ) {
+        icon()
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text,
+            style = TextStyle(fontSize = 20.sp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+fun RouteMapItem(
+    modifier: Modifier = Modifier,
+    title: String = "Stop",
+    removeTopLine: Boolean = false,
+    removeBottomLine: Boolean = false,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(NeonGreen)
+            )
+
+            Column {
+                Box(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .width(6.dp)
+                        .background(if (!removeTopLine) NeonGreen else Color.Transparent)
+                )
+                Box(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .width(6.dp)
+                        .background(if (!removeBottomLine) NeonGreen else Color.Transparent)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = title)
+    }
 }
 
 @Preview
@@ -228,7 +363,15 @@ fun RouteDetailsScreenPreview() {
         state = RouteDetailsState(),
         scaffoldState = rememberBottomSheetScaffoldState(),
         cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+            position = CameraPosition.fromLatLngZoom(LatLng(51.10788, 17.03853), 10f)
         }
+    )
+}
+
+@Preview
+@Composable
+fun RouteDetailsBottomSheetContentPreview() {
+    RouteDetailsBottomSheetContent(
+        state = RouteDetailsState()
     )
 }

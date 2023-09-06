@@ -26,6 +26,10 @@ data class RouteDetailsDisplayable(
         )
     }
 
+    fun getFormattedDuration(): String = "${time.div(60).toInt()}:${time.toInt() % 60} h"
+
+    fun getFormattedDistance(): String = String.format("%.2f km", distanceInMeters.div(1000f))
+
     fun getCoordinatesAsLatLng(): List<LatLng> {
         return geometry.map { coordinates ->
             coordinates.map { coordinate ->

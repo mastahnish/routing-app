@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pl.jacekrys.routingapp.core.ui.theme.NeonGreen
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
 import androidx.compose.ui.unit.sp as sp1
 
@@ -61,7 +62,7 @@ fun RouteItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFD3F268))
+                    .background(NeonGreen)
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
