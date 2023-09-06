@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
+import org.koin.androidx.compose.koinViewModel
 import pl.jacekrys.routingapp.core.ui.theme.RoutingAppTheme
 import pl.jacekrys.routingapp.feature.route.presentation.details.RouteDetailsScreen
 import pl.jacekrys.routingapp.feature.route.presentation.details.RouteDetailsViewModel
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
             RoutingAppTheme {
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
-                        val viewModel: RouteDetailsViewModel = RouteDetailsViewModel()
+                        val viewModel = koinViewModel<RouteDetailsViewModel>()
                         RouteDetailsScreen(viewModel = viewModel)
                     }
                 }
