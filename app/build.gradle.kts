@@ -23,8 +23,26 @@ android {
         }
     }
 
+
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "BUSRIGHT_BASE_URL",
+                "\"https://busright-interview.deno.dev/mobile/routes/\""
+            )
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
         release {
+            buildConfigField(
+                "String",
+                "BUSRIGHT_BASE_URL",
+                "\"https://busright-interview.deno.dev/mobile/routes/\""
+            )
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -41,6 +59,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -89,6 +108,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:$moshi")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshi")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofit")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     // DEPENDENCY INJECTION
     val koinAndroidVersion = "3.4.3"
