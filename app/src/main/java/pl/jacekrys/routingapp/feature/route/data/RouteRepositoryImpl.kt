@@ -31,7 +31,10 @@ class RouteRepositoryImpl(
 
     override suspend fun getRouteDetails(route: Route): RouteDetails {
         return callOrThrow(routingErrorWrapper) {
-            routingApi.getOptimalRoute().results.first()
+            routingApi.getOptimalRoute(
+                waypoints = mapListOfCoordinatesToQueryParameter(route.stops?.map { it.coordinates }
+                    ?: emptyList())
+            ).results.first()
                 .toDomain(route.id)
         }
     }

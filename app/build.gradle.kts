@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,7 +7,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
-
+val routingApiKey: String = gradleLocalProperties(rootDir).getProperty("ROUTING_API_KEY")
 android {
     namespace = "pl.jacekrys.routingapp"
     compileSdk = 34
@@ -31,6 +33,16 @@ android {
                 "BUSRIGHT_BASE_URL",
                 "\"https://busright-interview.deno.dev/mobile/routes/\""
             )
+            buildConfigField(
+                "String",
+                "ROUTING_BASE_URL",
+                "\"https://api.geoapify.com\""
+            )
+            buildConfigField(
+                "String",
+                "ROUTING_API_KEY",
+                "\"${routingApiKey}\""
+            )
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -42,6 +54,16 @@ android {
                 "String",
                 "BUSRIGHT_BASE_URL",
                 "\"https://busright-interview.deno.dev/mobile/routes/\""
+            )
+            buildConfigField(
+                "String",
+                "ROUTING_BASE_URL",
+                "\"https://api.geoapify.com\""
+            )
+            buildConfigField(
+                "String",
+                "ROUTING_API_KEY",
+                "\"${routingApiKey}\""
             )
             isMinifyEnabled = false
             proguardFiles(

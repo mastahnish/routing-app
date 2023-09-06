@@ -46,6 +46,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,6 +157,12 @@ fun RouteDetailsScreenContent(
                         ),
                         title = "Stop ${idx + 1}",
                     )
+                    state.routeDetails?.let {
+                        Polyline(
+                            points = it.getCoordinatesAsLatLng(),
+                            color = Color.Magenta
+                        )
+                    }
                 }
             }
             MapAppBar(

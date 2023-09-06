@@ -12,10 +12,13 @@ import org.koin.dsl.module
 import pl.jacekrys.routingapp.BuildConfig
 import pl.jacekrys.routingapp.feature.route.data.RouteRepositoryImpl
 import pl.jacekrys.routingapp.feature.route.data.remote.RouteApi
+import pl.jacekrys.routingapp.feature.route.data.remote.RoutingApi
 import pl.jacekrys.routingapp.feature.route.domain.repository.RouteRepository
+import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRouteDetailsUseCase
 import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRouteUseCase
 import pl.jacekrys.routingapp.feature.route.domain.usecase.GetRoutesListUseCase
 import pl.jacekrys.routingapp.feature.route.exception.RoutesErrorWrapper
+import pl.jacekrys.routingapp.feature.route.exception.RoutingErrorWrapper
 import pl.jacekrys.routingapp.feature.route.presentation.RoutesErrorMapper
 import pl.jacekrys.routingapp.feature.route.presentation.details.RouteDetailsViewModel
 import pl.jacekrys.routingapp.feature.route.presentation.list.RouteListViewModel
@@ -46,16 +49,27 @@ val routeModule = module {
         retrofit.create(RouteApi::class.java)
     }
 
+    single {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.ROUTING_BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(get()))
+            .client(get())
+            .build()
+
+        retrofit.create(RoutingApi::class.java)
+    }
+
     single<RouteRepository> {
-        RouteRepositoryImpl(get(), get())
+        RouteRepositoryImpl(get(), get(), get(), get())
     }
 
     factoryOf(::RoutesErrorWrapper)
-
+    factoryOf(::RoutingErrorWrapper)
 
     // domain
     factoryOf(::GetRoutesListUseCase)
     factoryOf(::GetRouteUseCase)
+    factoryOf(::GetRouteDetailsUseCase)
 
     // presentation
     factoryOf(::RoutesErrorMapper)
