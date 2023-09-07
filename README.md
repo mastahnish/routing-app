@@ -16,7 +16,7 @@ Screen displays route details, a map, and the most optimal route path.
 - [x] View route details, including a map with the optimal route path.
 - [x] Displaying route on map
 - [x] Utilize a routing API for route path calculation (Geoapify)
-- [] Display address for each stop with Reverse Geocoding API(Geoapify)
+- [ ] Display address for each stop with Reverse Geocoding API (Geoapify)
 
 ## Getting Started
 
@@ -77,6 +77,8 @@ Single feature package is divided into 3 Clean Architecture layers:
 - Routing API: [Geoapify](https://www.geoapify.com/)
 
 ## Screenshots
+
+UI design sketch available on [Figma](https://www.figma.com/file/rWptqGJMgzDa2JDVL6LI2B/Routing-app)
 
 <img src="screenshots/Screenshot_1.png" alt="Screenshot 1" height="400">
 <img src="screenshots/Screenshot_2.png" alt="Screenshot 2" height="400">
