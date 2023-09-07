@@ -7,4 +7,6 @@ data class RouteDetailsState(
     val route: RouteDisplayable? = null,
     val isLoading: Boolean = false,
     val routeDetails: RouteDetailsDisplayable? = null,
+    val routeDetailsError: Boolean = false,
+    val routeError: Boolean = false,
 )

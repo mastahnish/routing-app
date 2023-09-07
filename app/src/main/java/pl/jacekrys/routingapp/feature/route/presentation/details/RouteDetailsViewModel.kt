@@ -28,17 +28,21 @@ class RouteDetailsViewModel(
 
     fun getRouteDetails() {
         viewModelScope.launch {
+            _state.value = state.value.copy(isLoading = true)
             when (val result = getRouteUseCase(routeId)) {
                 is Resource.Success -> handleRouteSuccess(result.data)
                 is Resource.Error -> {
-                    Timber.e(result.error, "Error while getting route")
+                    _state.value = state.value.copy(routeError = true, isLoading = false)
                 }
             }
         }
     }
 
     private fun handleRouteDetailsSuccess(routeDetails: RouteDetails) {
-        _state.value = state.value.copy(routeDetails = RouteDetailsDisplayable(routeDetails))
+        _state.value = state.value.copy(
+            routeDetails = RouteDetailsDisplayable(routeDetails),
+            isLoading = false
+        )
     }
 
     private fun handleRouteSuccess(route: Route) {
@@ -51,6 +55,7 @@ class RouteDetailsViewModel(
 
                 is Resource.Error -> {
                     Timber.e(result.error, "Error while getting route details")
+                    _state.value = state.value.copy(routeDetailsError = true, isLoading = false)
                 }
             }
         }

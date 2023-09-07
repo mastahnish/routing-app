@@ -21,6 +21,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -105,6 +108,7 @@ fun RouteDetailsScreen(
         state = state,
         scaffoldState = scaffoldState,
         cameraPositionState = cameraPositionState,
+        onRetryClick = { viewModel.getRouteDetails() },
         onBackClicked = { viewModel.backToList() }
     )
 }
@@ -115,12 +119,14 @@ fun RouteDetailsScreenContent(
     state: RouteDetailsState,
     scaffoldState: BottomSheetScaffoldState,
     cameraPositionState: CameraPositionState,
-    onBackClicked: () -> Unit
+    onRetryClick: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     BottomSheetScaffold(
         sheetContent = {
             RouteDetailsBottomSheetContent(
                 state,
+                onRetryClick = onRetryClick,
                 modifier = Modifier
                     .nestedScroll(rememberNestedScrollInteropConnection())
                     .padding(horizontal = 16.dp)
@@ -170,6 +176,10 @@ fun RouteDetailsScreenContent(
                 title = state.route?.name ?: "",
                 onBackClicked = onBackClicked
             )
+            if (state.isLoading)
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
         }
     }
 }
@@ -234,69 +244,86 @@ fun RouteDetailsBottomSheetHandle(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RouteDetailsBottomSheetContent(state: RouteDetailsState, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-    ) {
-        state.routeDetails?.let {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+fun RouteDetailsBottomSheetContent(
+    state: RouteDetailsState,
+    onRetryClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (state.routeDetailsError || state.routeError)
+        Box {
+            Button(
+                onClick = onRetryClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = NeonGreen,
+                    contentColor = Color.Black
+                ),
             ) {
-                RouteDetailsInfoItem(
-                    icon = {
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .height(32.dp)
-                                .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                                .background(NeonGreen),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = state.route?.stops?.size.toString())
-                        }
-                    },
-                    text = stringResource(id = R.string.stops_label)
-                )
-                RouteDetailsInfoItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_duration),
-                            contentDescription = null,
-                            tint = NeonGreen
-                        )
-                    },
-                    text = it.getFormattedDuration()
-                )
-                RouteDetailsInfoItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_distance),
-                            contentDescription = null,
-                            tint = NeonGreen
-                        )
-                    },
-                    text = it.getFormattedDistance()
-                )
+                Text(text = stringResource(id = R.string.retry))
             }
         }
-        /*
-        TODO: Add reverse geocoding for each stop
-         */
-        LazyColumn {
-            val stops = state.route?.stops ?: emptyList()
-            itemsIndexed(stops) { idx, _ ->
-                RouteMapItem(
-                    title = stringResource(id = R.string.stop_label, idx),
-                    removeBottomLine = idx == stops.size - 1,
-                    removeTopLine = idx == 0,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+    else
+        Column(
+            modifier = modifier
+        ) {
+            state.routeDetails?.let {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    RouteDetailsInfoItem(
+                        icon = {
+                            Box(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .height(32.dp)
+                                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                    .background(NeonGreen),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = state.route?.stops?.size.toString())
+                            }
+                        },
+                        text = stringResource(id = R.string.stops_label)
+                    )
+                    RouteDetailsInfoItem(
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_duration),
+                                contentDescription = null,
+                                tint = NeonGreen
+                            )
+                        },
+                        text = it.getFormattedDuration()
+                    )
+                    RouteDetailsInfoItem(
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_distance),
+                                contentDescription = null,
+                                tint = NeonGreen
+                            )
+                        },
+                        text = it.getFormattedDistance()
+                    )
+                }
+            }
+            /*
+            TODO: Add reverse geocoding for each stop
+             */
+            LazyColumn {
+                val stops = state.route?.stops ?: emptyList()
+                itemsIndexed(stops) { idx, _ ->
+                    RouteMapItem(
+                        title = stringResource(id = R.string.stop_label, idx),
+                        removeBottomLine = idx == stops.size - 1,
+                        removeTopLine = idx == 0,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
-    }
 }
 
 @Composable
@@ -376,6 +403,7 @@ fun RouteDetailsScreenPreview() {
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(LatLng(51.10788, 17.03853), 10f)
         },
+        onRetryClick = {},
         onBackClicked = {}
     )
 }
@@ -384,6 +412,7 @@ fun RouteDetailsScreenPreview() {
 @Composable
 fun RouteDetailsBottomSheetContentPreview() {
     RouteDetailsBottomSheetContent(
-        state = RouteDetailsState()
+        state = RouteDetailsState(),
+        onRetryClick = {}
     )
 }
