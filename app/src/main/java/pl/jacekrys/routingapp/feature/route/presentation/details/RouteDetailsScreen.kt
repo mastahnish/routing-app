@@ -132,31 +132,11 @@ fun RouteDetailsScreenContent(
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetShadowElevation = 8.dp,
         sheetDragHandle = {
-            Column(
-                Modifier
+            RouteDetailsBottomSheetHandle(
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(96.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(100f))
-                        .background(Color.Black)
-                        .height(8.dp)
-                        .width(60.dp)
-                )
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    Text(
-                        "Route details", style = TextStyle(
-                            fontSize = 24.sp,
-                            lineHeight = 16.sp,
-                            fontWeight = FontWeight(600),
-                            color = Color(0xFF000000),
-                        )
-                    )
-                }
-            }
+            )
         }
     ) {
         Box {
@@ -227,6 +207,33 @@ fun MapAppBar(
 }
 
 @Composable
+fun RouteDetailsBottomSheetHandle(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .clip(RoundedCornerShape(100f))
+                .background(Color.Black)
+                .height(8.dp)
+                .width(60.dp)
+        )
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            Text(
+                "Route details", style = TextStyle(
+                    fontSize = 24.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF000000),
+                )
+            )
+        }
+    }
+}
+
+@Composable
 fun RouteDetailsBottomSheetContent(state: RouteDetailsState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
@@ -287,7 +294,6 @@ fun RouteDetailsBottomSheetContent(state: RouteDetailsState, modifier: Modifier 
             }
         }
     }
-
 }
 
 @Composable
