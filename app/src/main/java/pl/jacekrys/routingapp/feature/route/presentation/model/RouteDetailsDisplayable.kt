@@ -26,7 +26,7 @@ data class RouteDetailsDisplayable(
         )
     }
 
-    fun getFormattedDuration(): String = "${time.div(60).toInt()}:${time.toInt() % 60} h"
+    fun getFormattedDuration(): String = "${time.div(60).toInt()}:${time.toInt() % 60} min"
 
     fun getFormattedDistance(): String = String.format("%.2f km", distanceInMeters.div(1000f))
 

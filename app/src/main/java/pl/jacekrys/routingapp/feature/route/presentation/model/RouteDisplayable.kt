@@ -23,10 +23,10 @@ data class RouteDisplayable(
     )
 
     fun getCameraBounds(): LatLngBounds {
-        val minLat = stops?.minOfOrNull { it.coordinates.latitude.toDouble() } ?: 0.0
-        val minLng = stops?.minOfOrNull { it.coordinates.longitude.toDouble() } ?: 0.0
-        val maxLat = stops?.maxOfOrNull { it.coordinates.latitude.toDouble() } ?: 0.0
-        val maxLng = stops?.maxOfOrNull { it.coordinates.longitude.toDouble() } ?: 0.0
+        val minLat = stops.minOfOrNull { it.coordinates.latitude.toDouble() } ?: 0.0
+        val minLng = stops.minOfOrNull { it.coordinates.longitude.toDouble() } ?: 0.0
+        val maxLat = stops.maxOfOrNull { it.coordinates.latitude.toDouble() } ?: 0.0
+        val maxLng = stops.maxOfOrNull { it.coordinates.longitude.toDouble() } ?: 0.0
         return LatLngBounds(
             LatLng(minLat, minLng),
             LatLng(maxLat, maxLng)
