@@ -5,12 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -28,9 +31,21 @@ import pl.jacekrys.routingapp.feature.route.presentation.list.RouteListViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
+            val systemUiController = rememberSystemUiController()
             val navController = rememberNavController()
             val navigator: Navigator = koinInject()
+
+            LaunchedEffect(systemUiController) {
+                systemUiController.apply {
+                    setSystemBarsColor(
+                        color = Color.Black,
+                        darkIcons = false
+                    )
+                    setNavigationBarColor(color = Color.White, darkIcons = true)
+                }
+            }
             RoutingAppTheme {
                 LaunchedEffect(key1 = Unit) {
                     lifecycleScope.launch {

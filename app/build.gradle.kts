@@ -113,6 +113,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.1-alpha")
     ksp("androidx.lifecycle:lifecycle-compiler:2.6.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // NAVIGATION
     implementation("androidx.navigation:navigation-compose:2.7.2")
