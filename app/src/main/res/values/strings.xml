@@ -10,4 +10,5 @@
     <string name="greeting_subtext">Where do you want to go today?</string>
     <string name="retry">Retry</string>
     <string name="error_title">Oops!</string>
+    <string name="stop_label">Stop %d</string>
 </resources>

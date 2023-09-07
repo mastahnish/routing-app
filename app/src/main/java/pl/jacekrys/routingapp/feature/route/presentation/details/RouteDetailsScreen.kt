@@ -167,7 +167,7 @@ fun RouteDetailsScreenContent(
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
                     .padding(16.dp),
-                title = "Route name",
+                title = state.route?.name ?: "",
                 onBackClicked = onBackClicked
             )
         }
@@ -282,11 +282,14 @@ fun RouteDetailsBottomSheetContent(state: RouteDetailsState, modifier: Modifier 
                 )
             }
         }
+        /*
+        TODO: Add reverse geocoding for each stop
+         */
         LazyColumn {
             val stops = state.route?.stops ?: emptyList()
-            itemsIndexed(stops) { idx, stop ->
+            itemsIndexed(stops) { idx, _ ->
                 RouteMapItem(
-                    title = "Stop ${idx + 1}",
+                    title = stringResource(id = R.string.stop_label, idx),
                     removeBottomLine = idx == stops.size - 1,
                     removeTopLine = idx == 0,
                     modifier = Modifier.fillMaxWidth(),
@@ -360,7 +363,7 @@ fun RouteMapItem(
 @Preview
 @Composable
 fun MapAppBarPreview() {
-    MapAppBar(Modifier, "Route name", {})
+    MapAppBar(Modifier, "Route name") {}
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
