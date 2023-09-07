@@ -76,6 +76,8 @@ Single feature package is divided into 3 Clean Architecture layers:
 - Mapping library: Google Maps
 - Routing API: [Geoapify](https://www.geoapify.com/)
 
+## Screenshots
+
 <img src="screenshots/Screenshot_1.png" alt="Screenshot 1" height="400">
 <img src="screenshots/Screenshot_2.png" alt="Screenshot 2" height="400">
 <img src="screenshots/Screenshot_3.png" alt="Screenshot 3" height="400">
