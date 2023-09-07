@@ -64,6 +64,7 @@ interface RouteDao {
                 routeDetails.time
             )
         )
+        removeGeometry(routeDetails.routeId)
         insertRouteDetailsCoordinates(*routeDetails.geometry.map {
             RouteDetailsCoordinatesEntity(
                 routeDetails.routeId,
@@ -78,4 +79,7 @@ interface RouteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRouteDetailsCoordinates(vararg coordinates: RouteDetailsCoordinatesEntity)
+
+    @Query("DELETE FROM route_details_coordinates WHERE routeId = :routeId")
+    suspend fun removeGeometry(routeId: String)
 }
