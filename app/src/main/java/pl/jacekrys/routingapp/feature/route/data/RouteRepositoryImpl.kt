@@ -1,6 +1,9 @@
 package pl.jacekrys.routingapp.feature.route.data
 
 import pl.jacekrys.routingapp.core.exception.callOrThrow
+import pl.jacekrys.routingapp.core.network.NetworkStateProvider
+import pl.jacekrys.routingapp.feature.route.data.local.RouteDao
+import pl.jacekrys.routingapp.feature.route.data.local.model.RouteCached
 import pl.jacekrys.routingapp.feature.route.data.remote.RouteApi
 import pl.jacekrys.routingapp.feature.route.data.remote.RoutingApi
 import pl.jacekrys.routingapp.feature.route.domain.model.Route
@@ -13,20 +16,37 @@ class RouteRepositoryImpl(
     private val routeApi: RouteApi,
     private val routingApi: RoutingApi,
     private val routesErrorWrapper: RoutesErrorWrapper,
-    private val routingErrorWrapper: RoutingErrorWrapper
+    private val routingErrorWrapper: RoutingErrorWrapper,
+    private val networkStateProvider: NetworkStateProvider,
+    private val routeDao: RouteDao
 ) : RouteRepository {
     override suspend fun getRoutes(): List<Route> {
         return callOrThrow(routesErrorWrapper) {
-            routeApi.getRoutes().data
-                .map { it.toDomain() }
+            if (networkStateProvider.isNetworkAvailable())
+                routeApi.getRoutes().data
+                    .map { it.toDomain() }
+                    .also {
+                        routeDao.saveRoutes(*it.toTypedArray())
+                    }
+            else getRoutesFromDb()
         }
+    }
+
+    private suspend fun getRoutesFromDb(): List<Route> {
+        return routeDao.getRoutes().map { it.toDomain() }
     }
 
     override suspend fun getRoute(id: String): Route {
         return callOrThrow(routesErrorWrapper) {
-            routeApi.getRoute(id)
-                .toDomain()
+            if (networkStateProvider.isNetworkAvailable())
+                routeApi.getRoute(id)
+                    .toDomain()
+            else getRouteFromDb(id)
         }
+    }
+
+    private suspend fun getRouteFromDb(id: String): Route {
+        return routeDao.getRouteById(id).toDomain()
     }
 
     override suspend fun getRouteDetails(route: Route): RouteDetails {
@@ -38,4 +58,8 @@ class RouteRepositoryImpl(
                 .toDomain(route.id)
         }
     }
+
+//    private suspend fun getRouteDetailsFromDb(id: String): RouteDetails {
+//        return routeDao.getRouteDetails(id).toDomain()
+//    }
 }

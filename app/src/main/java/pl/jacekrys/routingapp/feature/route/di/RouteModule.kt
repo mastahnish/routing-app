@@ -60,7 +60,7 @@ val routeModule = module {
     }
 
     single<RouteRepository> {
-        RouteRepositoryImpl(get(), get(), get(), get())
+        RouteRepositoryImpl(get(), get(), get(), get(), get(), get())
     }
 
     factoryOf(::RoutesErrorWrapper)

@@ -115,11 +115,11 @@ dependencies {
     ksp("androidx.lifecycle:lifecycle-compiler:2.6.1")
 
     // NAVIGATION
-    implementation("androidx.navigation:navigation-compose:2.7.1")
+    implementation("androidx.navigation:navigation-compose:2.7.2")
 
     // DATABASE
     val room_version = "2.5.2"
-    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
 
     // NETWORKING
