@@ -4,5 +4,5 @@ data class RouteDetails(
     val routeId: String,
     val distanceInMeters: Int,
     val time: Float,
-    val geometry: List<List<Coordinates>>,
+    val geometry: List<Coordinates>,
 )

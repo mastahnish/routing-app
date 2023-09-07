@@ -8,7 +8,7 @@ data class RouteDetailsDisplayable(
     val routeId: String,
     val distanceInMeters: Int,
     val time: Float,
-    val geometry: List<List<Coordinates>>,
+    val geometry: List<Coordinates>,
 ) {
     constructor(routeDetails: RouteDetails) : this(
         routeDetails.routeId,
@@ -31,10 +31,8 @@ data class RouteDetailsDisplayable(
     fun getFormattedDistance(): String = String.format("%.2f km", distanceInMeters.div(1000f))
 
     fun getCoordinatesAsLatLng(): List<LatLng> {
-        return geometry.map { coordinates ->
-            coordinates.map { coordinate ->
-                LatLng(coordinate.latitude.toDouble(), coordinate.longitude.toDouble())
-            }
-        }.flatten()
+        return geometry.map { coordinate ->
+            LatLng(coordinate.latitude.toDouble(), coordinate.longitude.toDouble())
+        }
     }
 }

@@ -10,7 +10,7 @@ data class RouteDetailsRemote(
     fun toDomain(routeId: String) = RouteDetails(
         routeId = routeId,
         distanceInMeters = distance,
-        geometry = geometry.map { geometryRemote -> geometryRemote.map { it.toDomain() } },
+        geometry = geometry.map { geometryRemote -> geometryRemote.map { it.toDomain() } }.flatten(),
         time = time,
     )
 }

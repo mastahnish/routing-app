@@ -41,6 +41,7 @@ class RouteRepositoryImpl(
             if (networkStateProvider.isNetworkAvailable())
                 routeApi.getRoute(id)
                     .toDomain()
+                    .also { routeDao.saveRoutes(it) }
             else getRouteFromDb(id)
         }
     }
@@ -51,15 +52,18 @@ class RouteRepositoryImpl(
 
     override suspend fun getRouteDetails(route: Route): RouteDetails {
         return callOrThrow(routingErrorWrapper) {
-            routingApi.getOptimalRoute(
-                waypoints = mapListOfCoordinatesToQueryParameter(route.stops?.map { it.coordinates }
-                    ?: emptyList())
-            ).results.first()
-                .toDomain(route.id)
+            if (networkStateProvider.isNetworkAvailable())
+                routingApi.getOptimalRoute(
+                    waypoints = mapListOfCoordinatesToQueryParameter(route.stops?.map { it.coordinates }
+                        ?: emptyList())
+                ).results.first()
+                    .toDomain(route.id)
+                    .also { routeDao.saveRouteDetails(it) }
+            else getRouteDetailsFromDb(route.id)
         }
     }
 
-//    private suspend fun getRouteDetailsFromDb(id: String): RouteDetails {
-//        return routeDao.getRouteDetails(id).toDomain()
-//    }
+    private suspend fun getRouteDetailsFromDb(id: String): RouteDetails {
+        return routeDao.getRouteDetails(id).toDomain()
+    }
 }
