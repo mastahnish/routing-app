@@ -23,13 +23,17 @@ class RouteRepositoryImpl(
     override suspend fun getRoutes(): List<Route> {
         return callOrThrow(routesErrorWrapper) {
             if (networkStateProvider.isNetworkAvailable())
-                routeApi.getRoutes().data
-                    .map { it.toDomain() }
-                    .also {
-                        routeDao.saveRoutes(*it.toTypedArray())
-                    }
+                getRoutesFromNetwork()
             else getRoutesFromDb()
         }
+    }
+
+    private suspend fun getRoutesFromNetwork(): List<Route> {
+        return routeApi.getRoutes().data
+            .map { it.toDomain() }
+            .also {
+                routeDao.saveRoutes(*it.toTypedArray())
+            }
     }
 
     private suspend fun getRoutesFromDb(): List<Route> {
@@ -39,11 +43,15 @@ class RouteRepositoryImpl(
     override suspend fun getRoute(id: String): Route {
         return callOrThrow(routesErrorWrapper) {
             if (networkStateProvider.isNetworkAvailable())
-                routeApi.getRoute(id)
-                    .toDomain()
-                    .also { routeDao.saveRoutes(it) }
+                getRouteFromNetwork(id)
             else getRouteFromDb(id)
         }
+    }
+
+    private suspend fun getRouteFromNetwork(id: String): Route {
+        return routeApi.getRoute(id)
+            .toDomain()
+            .also { routeDao.saveRoutes(it) }
     }
 
     private suspend fun getRouteFromDb(id: String): Route {
@@ -53,14 +61,18 @@ class RouteRepositoryImpl(
     override suspend fun getRouteDetails(route: Route): RouteDetails {
         return callOrThrow(routingErrorWrapper) {
             if (networkStateProvider.isNetworkAvailable())
-                routingApi.getOptimalRoute(
-                    waypoints = mapListOfCoordinatesToQueryParameter(route.stops?.map { it.coordinates }
-                        ?: emptyList())
-                ).results.first()
-                    .toDomain(route.id)
-                    .also { routeDao.saveRouteDetails(it) }
+                getRouteDetailsFromNetwork(route)
             else getRouteDetailsFromDb(route.id)
         }
+    }
+
+    private suspend fun getRouteDetailsFromNetwork(route: Route): RouteDetails {
+        return routingApi.getOptimalRoute(
+            waypoints = mapListOfCoordinatesToQueryParameter(route.stops?.map { it.coordinates }
+                ?: emptyList())
+        ).results.first()
+            .toDomain(route.id)
+            .also { routeDao.saveRouteDetails(it) }
     }
 
     private suspend fun getRouteDetailsFromDb(id: String): RouteDetails {
